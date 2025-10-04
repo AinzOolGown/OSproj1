@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// structure set up to take in the data off the text file
 typedef struct {
     int pid;
     int arrival_time;
@@ -9,12 +10,14 @@ typedef struct {
 } Process;
 
 int main() {
+    //checking for the file, assumes its in the same directory as program
     FILE *file = fopen("processes.txt", "r");
     if (file == NULL) {
         perror("Error opening file");
         return 1;
     }
 
+    //making sure data is properly formated in the text file
     Process *processes = NULL;
     int count = 0;
     int capacity = 5; // initial size
@@ -25,6 +28,7 @@ int main() {
         return 1;
     }
 
+    //scanning the file for the data
     while (fscanf(file, "%d %d %d %d",
                   &processes[count].pid,
                   &processes[count].arrival_time,
@@ -33,6 +37,7 @@ int main() {
     {
         count++;
 
+        //adding capacity incase data is larger than expected
         if (count >= capacity) {
             capacity *= 2;
             processes = (Process*) realloc(processes, capacity * sizeof(Process));
@@ -46,6 +51,7 @@ int main() {
 
     fclose(file);
 
+    //printing information scanned to check success
     printf("Successfully read %d processes:\n", count);
     printf("PID\tArrival\tBurst\tPriority\n");
     printf("---------------------------------\n");
