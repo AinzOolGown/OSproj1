@@ -21,6 +21,11 @@ int compareSJF(const void *a, const void *b) {
     return p1->burst_time - p2->burst_time;
 }
 
+int comparePriority(const void *a, const void *b) {
+    Process *p1 = (Process *)a;
+    Process *p2 = (Process *)b;
+    return p1->priority - p2->priority; // lower priority value = higher priority
+}
 
 int main() {
     //checking for the file, assumes its in the same directory as program
