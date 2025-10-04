@@ -11,6 +11,7 @@ typedef struct {
     int waiting_time;
     int turnaround_time;
     int completion_time;
+    //for handling downtime
     int is_completed;
 } Process;
 
@@ -226,9 +227,9 @@ int main() {
         sjf(processes, count);
     else if (choice == 2)
         priority_scheduling(processes, count);
-    else {
+    else
         printf("Invalid choice.\n");
-    }
+
 
     free(processes);
     return 0;
