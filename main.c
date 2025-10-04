@@ -112,6 +112,24 @@ int main() {
         printf("   %d", current_time);
     }
 
+    printf("\n\nProcess Details:\n");
+    printf("PID\tArrival\tBurst\tPriority\tWaiting\tTurnaround\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d\t%d\t%d\t%d\t\t%d\t%d\n",
+               processes[i].pid,
+               processes[i].arrival_time,
+               processes[i].burst_time,
+               processes[i].priority,
+               processes[i].waiting_time,
+               processes[i].turnaround_time);
+    }
+
+    printf("\nAverage Waiting Time: %.2f\n", total_waiting / count);
+    printf("Average Turnaround Time: %.2f\n", total_turnaround / count);
+
+    free(processes);
+    return 0;
+
     /*printing information scanned to check success of text file reading
     printf("Successfully read %d processes:\n", count);
     printf("PID\tArrival\tBurst\tPriority\n");
