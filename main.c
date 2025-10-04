@@ -78,6 +78,34 @@ int main() {
     printf("Enter choice: ");
     scanf("%d", &choice);
 
+    if (choice == 1)
+        qsort(processes, count, sizeof(Process), compareSJF);
+    else if (choice == 2)
+        qsort(processes, count, sizeof(Process), comparePriority);
+    else {
+        printf("Invalid choice.\n");
+        free(processes);
+        return 1;
+    }
+
+    //simulating the sorting type
+    int current_time = 0;
+    double total_waiting = 0, total_turnaround = 0;
+
+    printf("\nGantt Chart:\n");
+
+    printf("|");
+    for (int i = 0; i < count; i++) {
+        current_time += processes[i].burst_time;
+        processes[i].completion_time = current_time;
+        processes[i].turnaround_time = processes[i].completion_time - processes[i].arrival_time;
+        processes[i].waiting_time = processes[i].turnaround_time - processes[i].burst_time;
+        total_waiting += processes[i].waiting_time;
+        total_turnaround += processes[i].turnaround_time;
+        printf(" P%d |", processes[i].pid);
+    }
+    printf("\n0");
+
     /*printing information scanned to check success of text file reading
     printf("Successfully read %d processes:\n", count);
     printf("PID\tArrival\tBurst\tPriority\n");
