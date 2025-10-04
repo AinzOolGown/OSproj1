@@ -106,6 +106,12 @@ int main() {
     }
     printf("\n0");
 
+    current_time = 0;
+    for (int i = 0; i < count; i++) {
+        current_time += processes[i].burst_time;
+        printf("   %d", current_time);
+    }
+
     /*printing information scanned to check success of text file reading
     printf("Successfully read %d processes:\n", count);
     printf("PID\tArrival\tBurst\tPriority\n");
