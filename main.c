@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <limits.h>
 
 // structure set up to take in the data off the text file
 typedef struct {
@@ -13,20 +11,168 @@ typedef struct {
     int waiting_time;
     int turnaround_time;
     int completion_time;
+    int is_completed;
 } Process;
 
 //sjf sorting function
-int compareSJF(const void *a, const void *b) {
-    Process *p1 = (Process *)a;
-    Process *p2 = (Process *)b;
-    return p1->burst_time - p2->burst_time;
+void sjf(Process *processes, int count) {
+    int completed = 0, current_time = 0;
+    double total_waiting = 0, total_turnaround = 0;
+
+    // Arrays to store Gantt chart data
+    int gantt_pids[100];
+    int gantt_start[100];
+    int gantt_end[100];
+    int gantt_count = 0;
+
+    // Initialize completion flags
+    for (int i = 0; i < count; i++) {
+        processes[i].is_completed = 0;
+    }
+
+    while (completed < count) {
+        int idx = -1;
+        int min_burst = 99999;
+
+        // Find shortest job that has arrived
+        for (int i = 0; i < count; i++) {
+            if (processes[i].arrival_time <= current_time && !processes[i].is_completed) {
+                if (processes[i].burst_time < min_burst) {
+                    min_burst = processes[i].burst_time;
+                    idx = i;
+                }
+            }
+        }
+
+        // If no process is ready, advance time
+        if (idx == -1) {
+            current_time++;
+            continue;
+        }
+
+        // Record Gantt segment
+        gantt_pids[gantt_count] = processes[idx].pid;
+        gantt_start[gantt_count] = current_time;
+        current_time += processes[idx].burst_time;
+        gantt_end[gantt_count] = current_time;
+        gantt_count++;
+
+        // Update process data
+        processes[idx].completion_time = current_time;
+        processes[idx].turnaround_time = processes[idx].completion_time - processes[idx].arrival_time;
+        processes[idx].waiting_time = processes[idx].turnaround_time - processes[idx].burst_time;
+        processes[idx].is_completed = 1;
+
+        total_waiting += processes[idx].waiting_time;
+        total_turnaround += processes[idx].turnaround_time;
+        completed++;
+    }
+
+    // ✅ Print properly formatted Gantt Chart
+    printf("\nGantt Chart:\n");
+    for (int i = 0; i < gantt_count; i++) {
+        printf("| P%d ", gantt_pids[i]);
+    }
+    printf("|\n");
+
+    for (int i = 0; i < gantt_count; i++) {
+        printf("%-5d", gantt_start[i]);
+    }
+    printf("%-5d\n", gantt_end[gantt_count - 1]);
+
+    printf("\n\nProcess Details:\n");
+    printf("PID\tArrival\tBurst\tPriority\tWaiting\tTurnaround\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d\t%d\t%d\t%d\t\t%d\t%d\n",
+               processes[i].pid,
+               processes[i].arrival_time,
+               processes[i].burst_time,
+               processes[i].priority,
+               processes[i].waiting_time,
+               processes[i].turnaround_time);
+    }
+
+    printf("\nAverage Waiting Time: %.2f\n", total_waiting / count);
+    printf("Average Turnaround Time: %.2f\n", total_turnaround / count);
 }
 
 //priority sorting function
-int comparePriority(const void *a, const void *b) {
-    Process *p1 = (Process *)a;
-    Process *p2 = (Process *)b;
-    return p1->priority - p2->priority; // lower priority value = higher priority
+void priority_scheduling(Process *processes, int count) {
+    int completed = 0, current_time = 0;
+    double total_waiting = 0, total_turnaround = 0;
+
+    // Arrays to store Gantt chart info
+    int gantt_pids[100];
+    int gantt_start[100];
+    int gantt_end[100];
+    int gantt_count = 0;
+
+    for (int i = 0; i < count; i++)
+        processes[i].is_completed = 0;
+
+    while (completed < count) {
+        int idx = -1;
+        int highest_priority = 99999;
+
+        // Find highest priority process that has arrived
+        for (int i = 0; i < count; i++) {
+            if (processes[i].arrival_time <= current_time && !processes[i].is_completed) {
+                if (processes[i].priority < highest_priority) {
+                    highest_priority = processes[i].priority;
+                    idx = i;
+                }
+            }
+        }
+
+        // If no process is ready, advance time
+        if (idx == -1) {
+            current_time++;
+            continue;
+        }
+
+        // Record Gantt segment
+        gantt_pids[gantt_count] = processes[idx].pid;
+        gantt_start[gantt_count] = current_time;
+        current_time += processes[idx].burst_time;
+        gantt_end[gantt_count] = current_time;
+        gantt_count++;
+
+        // Update process data
+        processes[idx].completion_time = current_time;
+        processes[idx].turnaround_time = processes[idx].completion_time - processes[idx].arrival_time;
+        processes[idx].waiting_time = processes[idx].turnaround_time - processes[idx].burst_time;
+        processes[idx].is_completed = 1;
+
+        total_waiting += processes[idx].waiting_time;
+        total_turnaround += processes[idx].turnaround_time;
+        completed++;
+    }
+
+    // Print Gantt Chart
+    printf("\nGantt Chart:\n");
+    for (int i = 0; i < gantt_count; i++)
+        printf("| P%d ", gantt_pids[i]);
+    printf("|\n");
+
+    for (int i = 0; i < gantt_count; i++)
+        printf("%-5d", gantt_start[i]);
+    printf("%-5d\n", gantt_end[gantt_count - 1]);
+
+    // Print process details
+    printf("\nProcess Details:\n");
+    printf("PID\tArrival\tBurst\tPriority\tWaiting\tTurnaround\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d\t%d\t%d\t%d\t\t%d\t%d\n",
+               processes[i].pid,
+               processes[i].arrival_time,
+               processes[i].burst_time,
+               processes[i].priority,
+               processes[i].waiting_time,
+               processes[i].turnaround_time);
+    }
+
+    printf("\nAverage Waiting Time: %.2f\n", total_waiting / count);
+    printf("Average Turnaround Time: %.2f\n", total_turnaround / count);
 }
 
 int main() {
@@ -53,10 +199,8 @@ int main() {
                   &processes[count].pid,
                   &processes[count].arrival_time,
                   &processes[count].burst_time,
-                  &processes[count].priority) == 4)
-    {
+                  &processes[count].priority) == 4){
         count++;
-
         //adding capacity incase data is larger than expected
         if (count >= capacity) {
             capacity *= 2;
@@ -79,57 +223,12 @@ int main() {
     scanf("%d", &choice);
 
     if (choice == 1)
-        qsort(processes, count, sizeof(Process), compareSJF);
+        sjf(processes, count);
     else if (choice == 2)
-        qsort(processes, count, sizeof(Process), comparePriority);
+        priority_scheduling(processes, count);
     else {
         printf("Invalid choice.\n");
-        free(processes);
-        return 1;
     }
-
-    //simulating the sorting type
-    int current_time = 0;
-    double total_waiting = 0, total_turnaround = 0;
-
-    printf("\nGantt Chart:\n");
-
-    printf("|");
-    for (int i = 0; i < count; i++) {
-        if (current_time < processes[i].arrival_time)
-            current_time = processes[i].arrival_time;
-        current_time += processes[i].burst_time;
-
-        processes[i].completion_time = current_time;
-        processes[i].turnaround_time = processes[i].completion_time - processes[i].arrival_time;
-        processes[i].waiting_time = processes[i].turnaround_time - processes[i].burst_time;
-
-        total_waiting += processes[i].waiting_time;
-        total_turnaround += processes[i].turnaround_time;
-        printf(" P%d |", processes[i].pid);
-    }
-    printf("\n0");
-
-    current_time = 0;
-    for (int i = 0; i < count; i++) {
-        current_time += processes[i].burst_time;
-        printf("    %d", current_time);
-    }
-
-    printf("\n\nProcess Details:\n");
-    printf("PID\tArrival\tBurst\tPriority\tWaiting\tTurnaround\n");
-    for (int i = 0; i < count; i++) {
-        printf("%d\t%d\t%d\t%d\t\t%d\t%d\n",
-               processes[i].pid,
-               processes[i].arrival_time,
-               processes[i].burst_time,
-               processes[i].priority,
-               processes[i].waiting_time,
-               processes[i].turnaround_time);
-    }
-
-    printf("\nAverage Waiting Time: %.2f\n", total_waiting / count);
-    printf("Average Turnaround Time: %.2f\n", total_turnaround / count);
 
     free(processes);
     return 0;
