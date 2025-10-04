@@ -96,10 +96,14 @@ int main() {
 
     printf("|");
     for (int i = 0; i < count; i++) {
+        if (current_time < processes[i].arrival_time)
+            current_time = processes[i].arrival_time;
         current_time += processes[i].burst_time;
+
         processes[i].completion_time = current_time;
         processes[i].turnaround_time = processes[i].completion_time - processes[i].arrival_time;
         processes[i].waiting_time = processes[i].turnaround_time - processes[i].burst_time;
+
         total_waiting += processes[i].waiting_time;
         total_turnaround += processes[i].turnaround_time;
         printf(" P%d |", processes[i].pid);
@@ -109,7 +113,7 @@ int main() {
     current_time = 0;
     for (int i = 0; i < count; i++) {
         current_time += processes[i].burst_time;
-        printf("   %d", current_time);
+        printf("    %d", current_time);
     }
 
     printf("\n\nProcess Details:\n");
