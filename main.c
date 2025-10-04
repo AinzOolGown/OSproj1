@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <limits.h>
 
 // structure set up to take in the data off the text file
 typedef struct {
@@ -7,6 +9,10 @@ typedef struct {
     int arrival_time;
     int burst_time;
     int priority;
+    //these are for the output
+    int waiting_time;
+    int turnaround_time;
+    int completion_time;
 } Process;
 
 int main() {
