@@ -15,12 +15,14 @@ typedef struct {
     int completion_time;
 } Process;
 
+//sjf sorting function
 int compareSJF(const void *a, const void *b) {
     Process *p1 = (Process *)a;
     Process *p2 = (Process *)b;
     return p1->burst_time - p2->burst_time;
 }
 
+//priority sorting function
 int comparePriority(const void *a, const void *b) {
     Process *p1 = (Process *)a;
     Process *p2 = (Process *)b;
@@ -69,7 +71,14 @@ int main() {
 
     fclose(file);
 
-    //printing information scanned to check success
+    int choice;
+    printf("Choose Scheduling Algorithm:\n");
+    printf("1. Shortest Job First (SJF)\n");
+    printf("2. Priority Scheduling\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
+
+    /*printing information scanned to check success of text file reading
     printf("Successfully read %d processes:\n", count);
     printf("PID\tArrival\tBurst\tPriority\n");
     printf("---------------------------------\n");
@@ -83,4 +92,5 @@ int main() {
 
     free(processes);
     return 0;
+    */
 }
